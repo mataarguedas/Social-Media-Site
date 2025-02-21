@@ -54,3 +54,28 @@ body {
 .form-button:hover {
     background-color: #cc0000; /* Darker red on hover */
 }
+
+.error-message {
+    color: #ffcccb; /* Light red for error message */
+    margin-bottom: 15px;
+}
+
+.email-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.email-account, .email-domain {
+    flex: 1;
+}
+
+.email-account label, .email-domain label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.email-account .form-input, .email-domain .form-input {
+    width: 100%;
+}

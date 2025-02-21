@@ -82,6 +82,39 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
+#List of allowed email domains
+ALLOWED_EMAIL_DOMAINS = [
+    'ucr.ac.cr',
+    'una.cr',
+    'tec.ac.cr',
+    'earth.ac.cr',
+    'incase.edu',
+    'ulatina.ac.cr',
+    'ulacit.ac.cr',
+    'veritas.cr',
+    'uam.cr',
+    'uci.ac.cr',
+    'uaca.cr',
+    'uiberoamerica.cr',
+    'ucienciasmedicas.cr',
+    'ucartago.cr',
+    'usj.cr',
+    'ucienciasyarte.cr',
+    'ufsjt.cr',
+    'umagister.cr',
+    'uip.cr',
+    'ucsa.cr',
+    'upapa.cr',
+    'uisil.cr',
+    'uem.cr',
+    'uicr.cr',
+    'uea.cr',
+    'uca.cr',
+    'uct.cr',
+    'usac.cr',
+    'usc.cr',
+]
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
