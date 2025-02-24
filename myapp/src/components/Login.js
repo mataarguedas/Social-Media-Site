@@ -28,6 +28,7 @@ const Login = () => {
 
     return (
         <div className="login-container">
+            <img src="/assets/logo.png" alt="Logo" className="login-logo" />
             <h1>Login</h1>
             <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">

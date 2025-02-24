@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css'; // Import the CSS file
 
 const Dashboard = () => {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log('Dashboard component rendered');
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');
