@@ -27,18 +27,28 @@ const Register = () => {
         };
         delete completeFormData.emailAccount;
         delete completeFormData.emailDomain;
-
+    
         try {
             const response = await axios.post('http://localhost:5000/register', completeFormData);
             console.log(response.data);
             alert('Registration successful!');
             history.push('/login');
         } catch (error) {
-            console.error(error.response.data);
-            if (error.response && error.response.data.email) {
-                setError(error.response.data.email[0]);
+            console.error(error);
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                if (error.response.data.email) {
+                    setError(error.response.data.email[0]);
+                } else {
+                    setError('Registration failed. Please check your inputs.');
+                }
+            } else if (error.request) {
+                // The request was made but no response was received
+                setError('No response from the server. Please check your network connection.');
             } else {
-                setError('Registration failed. Please check your inputs.');
+                // Something happened in setting up the request that triggered an Error
+                setError('An error occurred. Please try again.');
             }
         }
     };
