@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Dashboard.css'; // Import the CSS file
+import { useNavigate, Link } from 'react-router-dom';
+import './Dashboard.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -17,7 +17,10 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <h1>Welcome to the Dashboard</h1>
-            <button onClick={handleLogout} className="logout-button">Logout</button>
+            <div className="dashboard-links">
+                <Link to="/profile" className="profile-link">View Profile</Link>
+                <button onClick={handleLogout} className="logout-button">Logout</button>
+            </div>
         </div>
     );
 };

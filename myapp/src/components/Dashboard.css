@@ -14,6 +14,12 @@ body {
     color: #ffffff; /* White text */
 }
 
+.dashboard-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
 .logout-button {
     padding: 10px 20px;
     background-color: #000000; /* Black background for button */
@@ -22,9 +28,23 @@ body {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 20px;
 }
 
 .logout-button:hover {
     background-color: #333333; /* Darker black on hover */
+}
+
+.profile-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ffffff;
+    color: #ec729c;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.profile-link:hover {
+    background-color: #f0f0f0;
 }
