@@ -21,6 +21,14 @@ body {
     width: 300px;
 }
 
+/* New styling for field-specific errors */
+.field-error {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -56,12 +64,17 @@ body {
 }
 
 .error-message {
-    color: #ffcccb; /* Light red for error message */
+    color: #e74c3c;
+    background-color: #fadbd8;
+    padding: 10px;
+    border-radius: 5px;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .email-group {
     display: flex;
+    position: relative;
     flex-direction: row;
     justify-content: space-between;
     gap: 10px;
@@ -78,4 +91,66 @@ body {
 
 .email-account .form-input, .email-domain .form-input {
     width: 100%;
+}
+
+@media (max-width: 768px) {
+    .email-group {
+        flex-direction: column;
+    }
+}
+
+/* Popup styling */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+.popup-content p {
+    margin: 10px 0;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* For email duplicate error */
+.popup-content.error p {
+    color: #e74c3c;
 }

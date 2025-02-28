@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './Register.css'; // Import the CSS file
+import './Register.css';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -10,12 +10,26 @@ const Register = () => {
         emailDomain: 'ucr.ac.cr', // Default domain
         password: ''
     });
-    const [error, setError] = useState('');
-    const history = useNavigate();
+    const [errors, setErrors] = useState({
+        username: '',
+        email: '',
+        password: '',
+        general: ''
+    });
+    const [popup, setPopup] = useState({
+        show: false,
+        message: ''
+    });
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        
+        // Clear error when user starts typing
+        if (errors[name]) {
+            setErrors({ ...errors, [name]: '' });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -31,26 +45,78 @@ const Register = () => {
         try {
             const response = await axios.post('http://localhost:5000/register', completeFormData);
             console.log(response.data);
-            alert('Registration successful!');
-            history.push('/login');
+            setPopup({
+                show: true,
+                message: 'Registration successful!'
+            });
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (error) {
             console.error(error);
+            // Reset all errors first
+            setErrors({
+                username: '',
+                email: '',
+                password: '',
+                general: ''
+            });
+            
             if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                if (error.response.data.email) {
-                    setError(error.response.data.email[0]);
-                } else {
-                    setError('Registration failed. Please check your inputs.');
+                const data = error.response.data;
+                
+                // Handle specific field errors
+                if (data.email) {
+                    setErrors(prev => ({ ...prev, email: data.email[0] }));
+                    
+                    // Show popup for email already registered
+                    if (data.email[0].includes("ya está registrado")) {
+                        setPopup({
+                            show: true,
+                            message: `El correo electrónico ${fullEmail} ya está registrado.`
+                        });
+                    }
+                }
+                if (data.username) {
+                    setErrors(prev => ({ ...prev, username: data.username[0] }));
+                }
+                if (data.password) {
+                    setErrors(prev => ({ ...prev, password: data.password[0] }));
+                }
+                
+                // If no specific field errors but still failed
+                if (!data.email && !data.username && !data.password) {
+                    setErrors(prev => ({ 
+                        ...prev, 
+                        general: 'Registration failed. Please check your inputs.' 
+                    }));
                 }
             } else if (error.request) {
-                // The request was made but no response was received
-                setError('No response from the server. Please check your network connection.');
+                setErrors(prev => ({ 
+                    ...prev, 
+                    general: 'No response from the server. Please check your network connection.' 
+                }));
             } else {
-                // Something happened in setting up the request that triggered an Error
-                setError('An error occurred. Please try again.');
+                setErrors(prev => ({ 
+                    ...prev, 
+                    general: 'An error occurred. Please try again.' 
+                }));
             }
         }
+    };
+
+    // Close popup after 3 seconds
+    useEffect(() => {
+        if (popup.show) {
+            const timer = setTimeout(() => {
+                setPopup({ show: false, message: '' });
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [popup.show]);
+
+    const closePopup = () => {
+        setPopup({ show: false, message: '' });
     };
 
     const allowedDomains = [
@@ -88,7 +154,18 @@ const Register = () => {
     return (
         <div className="register-container">
             <h1>User Registration</h1>
-            {error && <p className="error-message">{error}</p>}
+            {errors.general && <p className="error-message">{errors.general}</p>}
+            
+            {/* Popup notification */}
+            {popup.show && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <span className="close-button" onClick={closePopup}>&times;</span>
+                        <p>{popup.message}</p>
+                    </div>
+                </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="register-form">
                 <div className="form-group">
                     <label>Username:</label>
@@ -100,34 +177,38 @@ const Register = () => {
                         required 
                         className="form-input"
                     />
+                    {errors.username && <p className="field-error">{errors.username}</p>}
                 </div>
-                <div className="form-group email-group">
-                    <div className="email-account">
-                        <label>Email Account:</label>
-                        <input 
-                            type="text" 
-                            name="emailAccount" 
-                            value={formData.emailAccount} 
-                            onChange={handleChange} 
-                            required 
-                            className="form-input"
-                        />
+                <div className="form-group">
+                    <label>Email:</label>
+                    <div className="email-group">
+                        <div className="email-account">
+                            <input 
+                                type="text" 
+                                name="emailAccount" 
+                                value={formData.emailAccount} 
+                                onChange={handleChange} 
+                                required 
+                                className="form-input"
+                                placeholder="username"
+                            />
+                        </div>
+                        <div className="email-domain">
+                            <select 
+                                name="emailDomain" 
+                                value={formData.emailDomain} 
+                                onChange={handleChange} 
+                                className="form-input"
+                            >
+                                {allowedDomains.map((domain) => (
+                                    <option key={domain} value={domain}>
+                                        @{domain}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
-                    <div className="email-domain">
-                        <label>Email Domain:</label>
-                        <select 
-                            name="emailDomain" 
-                            value={formData.emailDomain} 
-                            onChange={handleChange} 
-                            className="form-input"
-                        >
-                            {allowedDomains.map((domain) => (
-                                <option key={domain} value={domain}>
-                                    {domain}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {errors.email && <p className="field-error">{errors.email}</p>}
                 </div>
                 <div className="form-group">
                     <label>Password:</label>
@@ -139,6 +220,7 @@ const Register = () => {
                         required 
                         className="form-input"
                     />
+                    {errors.password && <p className="field-error">{errors.password}</p>}
                 </div>
                 <button type="submit" className="form-button">Register</button>
             </form>
