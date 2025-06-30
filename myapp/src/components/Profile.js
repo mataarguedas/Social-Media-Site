@@ -41,7 +41,9 @@ const Profile = () => {
                 setUser(userData);
                 
                 if (userData.profile && userData.profile.profile_picture) {
-                    setPreviewImage(`http://localhost:5000/${userData.profile.profile_picture}`);
+                    // Use Express server URL instead of trying to access Django directly
+                    // The Express server will proxy the image requests properly
+                    setPreviewImage(`http://localhost:5000/uploads/${userData.profile.profile_picture}`);
                 }
                 setLoading(false);
             } catch (error) {
@@ -75,7 +77,6 @@ const Profile = () => {
                 [name]: value
             }));
         }
-        // We're ignoring email changes now
     };
 
     const handleFileChange = (e) => {
@@ -121,9 +122,20 @@ const Profile = () => {
             });
             
             console.log('Profile updated successfully:', response.data);
+            
+            // Update the local state with the response data
+            const updatedUser = response.data;
+            setUser(updatedUser);
+            
+            // Update the preview image with the new profile picture if available
+            if (updatedUser.profile && updatedUser.profile.profile_picture) {
+                // Always use the Express server URL to access the image
+                const profilePicPath = updatedUser.profile.profile_picture;
+                setPreviewImage(`http://localhost:5000/uploads/${profilePicPath}`);
+            }
+            
             setIsEditing(false);
-            // Refresh the profile
-            window.location.reload();
+            setSelectedFile(null);
         } catch (error) {
             console.error('Error updating profile:', error.response?.data || error);
             setError('Failed to update profile. Please try again.');

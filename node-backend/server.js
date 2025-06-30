@@ -109,6 +109,9 @@ app.put('/profile', upload.single('profile_picture'), async (req, res) => {
                 filename: req.file.filename,
                 contentType: req.file.mimetype
             });
+
+            // Store only the filename part for the profile_picture field
+            profileData.profile.profile_picture = `profile_pics/${req.file.filename}`;
         }
         
         console.log('Sending data to Django API...');
@@ -122,8 +125,15 @@ app.put('/profile', upload.single('profile_picture'), async (req, res) => {
             maxBodyLength: Infinity
         });
         
-        console.log('Django API response:', response.data);
-        res.status(200).json(response.data);
+        // Modify the response data to use our server path for the profile_picture
+        const responseData = response.data;
+        if (responseData.profile && responseData.profile.profile_picture && req.file) {
+            // Update the profile_picture path to reflect what we'll serve from Express
+            responseData.profile.profile_picture = `profile_pics/${req.file.filename}`;
+        }
+        
+        console.log('Django API response (modified):', responseData);
+        res.status(200).json(responseData);
     } catch (error) {
         console.error('Profile update error details:');
         if (error.response) {
@@ -140,8 +150,19 @@ app.put('/profile', upload.single('profile_picture'), async (req, res) => {
     }
 });
 
-// Serve uploaded files
-app.use('/uploads', express.static('uploads'));
+// Serve uploaded files with CORS enabled
+app.use('/uploads', (req, res, next) => {
+    // Add CORS headers specifically for image resources
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+}, express.static(path.join(__dirname, 'uploads')));
+
+// Backend health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).send('Server is running!');
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
